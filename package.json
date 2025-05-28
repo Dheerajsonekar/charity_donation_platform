@@ -1,0 +1,24 @@
+{
+  "name": "charity_donation_platform",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "dheeraj sonekar",
+  "license": "ISC",
+  "description": "this is all about charity donation platform where user can donate money to the charity and also can see the list of charities",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
+    "path": "^0.12.7",
+    "sequelize": "^6.37.7"
+  }
+}

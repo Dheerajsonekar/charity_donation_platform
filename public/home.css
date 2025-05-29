@@ -1,0 +1,70 @@
+ body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    .navbar {
+      background-color: #2c3e50;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      position: sticky;
+    }
+
+    .navbar .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .profile-container {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .profile-pic {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background-color: white;
+      background-image: url('https://i.imgur.com/IAWZ8sR.png'); /* Placeholder image */
+      background-size: cover;
+      background-position: center;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 45px;
+      right: 0;
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      width: 160px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 100;
+    }
+
+    .dropdown a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+    }
+
+    .dropdown a:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown p {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: black;
+    }
+
+    .dropdown p:hover {
+      background-color: #f1f1f1;
+    }
+
+
+    

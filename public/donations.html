@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Donation History</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>My Donation History</h2>
+    <table id="donationTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Charity</th>
+          <th>Amount</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Fetched rows will appear here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+
+    fetch("/api/user/donations", {
+      headers: {
+        Authorization: token
+      }
+    })
+    .then(res => res.json())
+    .then(donations => {
+      const tableBody = document.querySelector("#donationTable tbody");
+      donations.forEach((donation, index) => {
+        const row = `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${donation.charityName}</td>
+            <td>₹${donation.amount}</td>
+            <td>${new Date(donation.timestamp).toLocaleString()}</td>
+          </tr>
+        `;
+        tableBody.insertAdjacentHTML("beforeend", row);
+      });
+    });
+  </script>
+</body>
+</html>

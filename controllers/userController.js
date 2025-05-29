@@ -54,3 +54,20 @@ exports.login = async (req, res) => {
     res.status(500).json(err);
   }
 };
+
+
+exports.getUserProfile = async (req, res) => {
+  try {
+    const user = req.user; // set by auth middleware
+
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to get profile' });
+  }
+};
+

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Registration</title>
+</head>
+<body>
+  <h2>Admin Registration</h2>
+  <form id="registerForm">
+    <input type="text" name="name" placeholder="Name" required /><br/>
+    <input type="email" name="email" placeholder="Email" required /><br/>
+    <input type="text" name="phone" placeholder="Phone" required /><br/>
+    <input type="password" name="password" placeholder="Password" required /><br/>
+    <input type="password" name="confirmPassword" placeholder="Confirm Password" required /><br/>
+    <input type="text" name="adminSecret" placeholder="Admin Secret" required /><br/>
+    <button type="submit">Register</button>
+  </form>
+  <p>Already a Admin?<a href="./admin-login.html">Click here</a></p>
+  <p>Normal User?<a href="./login.html">Click here</a></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      if (data.password !== data.confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+
+      try {
+        const res = await axios.post('/api/admin/register', data);
+        alert(res.data.message);
+        window.location.href = '/admin-login.html';
+      } catch (err) {
+        alert(err.response?.data?.message || 'Registration failed');
+      }
+    });
+  </script>
+</body>
+</html>

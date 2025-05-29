@@ -1,19 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta charset="UTF-8">
+  <title>home</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* Navbar Container */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 40px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      font-weight: bold;
+      font-size: 22px;
+      color: #2c3e50;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-size: 16px;
+      padding: 8px;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: #3498db;
+    }
+
+    .profile-container {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .profile-pic {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      
+      background-size: cover;
+      background-position: center;
+      border: 2px solid #3498db;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 45px;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ddd;
+      width: 160px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+      border-radius: 6px;
+    }
+
+    .dropdown a {
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .dropdown a:hover {
+      background-color: #f5f5f5;
+    }
+
+    .auth-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .auth-button {
+      padding: 8px 16px;
+      border: 1px solid #3498db;
+      background-color: transparent;
+      color: #3498db;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .auth-button:hover {
+      background-color: #3498db;
+      color: white;
+    }
+
+  </style>
 </head>
-
 <body>
-    <div class ="header">
-       <button id="logoutbtn" class="logoutbtn">logout</button>
-    </div>
-    
-   <script src="./home.js"></script>
-</body>
 
+  <nav class="navbar">
+    <div class="logo">🌟 DonateKart</div>
+    
+    <div class="nav-links">
+      <a href="/allCampaign.html">Campaigns</a>
+      <a href="/campaign-form.html">Start a Campaign</a>
+      <a href="/about-us.html">About Us</a>
+      <a href="/footer.html">Contact</a>
+    </div>
+
+    <div class="auth-section">
+      <!-- If user is logged in, show profile. Else, show Login button -->
+      <div class="profile-container" id="profileContainer" style="display: none;">
+        <div class="profile-pic" id="profilePic"></div>
+        <div class="dropdown" id="dropdownMenu">
+          <a href="/profile.html">👤 My Profile</a>
+          <a href="/donations.html">📜 Donations</a>
+          <a href="#" id="logout">🚪 Logout</a>
+        </div>
+      </div>
+      <button class="auth-button" id="loginBtn">Login/Signup</button>
+    </div>
+  </nav>
+
+  <!-- Axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script src="./home.js"></script>
+
+</body>
 </html>

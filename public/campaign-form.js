@@ -22,7 +22,7 @@ form.addEventListener("submit", async (e) => {
         },
       }
     );
-    alert("Campaign created successfully!");
+    alert("Campaign created successfullyand send for approval.");
     form.reset();
     window.location.href = "./allCampaign.html"
   } catch (error) {

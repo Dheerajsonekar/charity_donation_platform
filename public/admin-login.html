@@ -25,7 +25,7 @@
       try {
         const res = await axios.post('/api/admin/login', data);
         localStorage.setItem('token', res.data.token);
-        alert('Login successful');
+       
         window.location.href = '/admin-dashboard.html'; // your admin dashboard page
       } catch (err) {
         alert(err.response?.data?.message || 'Login failed');

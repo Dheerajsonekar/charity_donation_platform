@@ -26,6 +26,7 @@ exports.createCampaign = async (req, res) => {
 exports.getAllCampaigns = async (req, res) => {
     try {
         const campaigns = await Campaign.findAll({
+          where: {status: 'approved'},
         include: [{
             model: User,
             attributes: ['name', 'email'] // Include user details

@@ -11,7 +11,7 @@ const Campaign = require('./models/Campaign');
 const campaignRoutes = require('./routes/campaignRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminAuthRoutes = require('./routes/adminAuthRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
 
 
 
@@ -24,6 +24,7 @@ app.get('/', (req, res, next)=>{
 })
 
 app.use('/api', adminAuthRoutes);
+app.use('/api', adminRoutes);
 app.use('/api', userRoutes);
 app.use('/api', campaignRoutes);
 

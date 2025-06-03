@@ -1,70 +1,171 @@
- body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-    }
-    .navbar {
-      background-color: #2c3e50;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      position: sticky;
-    }
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+}
 
-    .navbar .logo {
-      font-size: 20px;
-      font-weight: bold;
-    }
+/* Navbar Container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 40px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-    .profile-container {
-      position: relative;
-      cursor: pointer;
-    }
+.navbar .logo {
+  font-weight: bold;
+  font-size: 22px;
+  color: #2c3e50;
+}
 
-    .profile-pic {
-      width: 35px;
-      height: 35px;
-      border-radius: 50%;
-      background-color: white;
-      background-image: url('https://i.imgur.com/IAWZ8sR.png'); /* Placeholder image */
-      background-size: cover;
-      background-position: center;
-    }
+.nav-links {
+  display: flex;
+  gap: 24px;
+}
 
-    .dropdown {
-      position: absolute;
-      top: 45px;
-      right: 0;
-      background-color: white;
-      color: black;
-      border: 1px solid #ccc;
-      width: 160px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      display: none;
-      z-index: 100;
-    }
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding: 8px;
+  transition: color 0.2s ease;
+}
 
-    .dropdown a {
-      display: block;
-      padding: 10px;
-      text-decoration: none;
-      color: black;
-    }
+.nav-links a:hover {
+  color: #3498db;
+}
 
-    .dropdown a:hover {
-      background-color: #f1f1f1;
-    }
-    .dropdown p {
-      display: block;
-      padding: 10px;
-      text-decoration: none;
-      color: black;
-    }
+.profile-container {
+  position: relative;
+  cursor: pointer;
+}
 
-    .dropdown p:hover {
-      background-color: #f1f1f1;
-    }
+.profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
 
+  background-size: cover;
+  background-position: center;
+  border: 2px solid #3498db;
+}
 
-    
+.dropdown {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 1000;
+  border-radius: 6px;
+}
+
+.dropdown a {
+  display: block;
+  padding: 10px;
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown a:hover {
+  background-color: #f5f5f5;
+}
+
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.auth-button {
+  padding: 8px 16px;
+  border: 1px solid #3498db;
+  background-color: transparent;
+  color: #3498db;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  .hamburger {
+    display: block;
+  }
+  .auth-section {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    position: absolute;
+    top: calc(60px + 100%); /* Push below nav-links */
+    left: 0;
+    right: 0;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+  }
+
+  .auth-section.show {
+    display: flex;
+  }
+
+  .auth-button {
+    width: 80%;
+    text-align: center;
+  }
+
+  .profile-container {
+    margin: 10px 0;
+  }
+
+  .dropdown {
+    position: static;
+    box-shadow: none;
+    width: 100%;
+    border: none;
+  }
+
+  .dropdown a {
+    padding: 8px;
+    border-top: 1px solid #eee;
+    width: 100%;
+    text-align: center;
+  }
+}

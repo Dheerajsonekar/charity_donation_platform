@@ -52,4 +52,19 @@ loginBtn.addEventListener("click", () => {
 
 
 
- 
+ const hamburger = document.getElementById("hamburger");
+  const navLinks = document.querySelector(".nav-links");
+ const authsection = document.querySelector(".auth-section");
+
+  hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+    authsection.classList.toggle("show");
+  });
+
+  // Close hamburger menu on outside click
+window.addEventListener("click", (e) => {
+  if (!hamburger.contains(e.target) && !navLinks.contains(e.target) && !authsection.contains(e.target)) {
+    navLinks.classList.remove("show");
+    authsection.classList.remove("show");
+  }
+});

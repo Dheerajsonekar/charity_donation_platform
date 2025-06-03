@@ -1,0 +1,71 @@
+/* General body styling to match navbar */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  color: #2c3e50;
+}
+
+/* Form section styling */
+.form-section {
+  max-width: 400px;
+  margin: 80px auto;
+  padding: 40px 30px;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+}
+h2 {
+   margin-bottom: 40px;
+  
+  color: #2c3e50;
+  font-size: 24px;
+  text-align: center;
+
+}
+
+/* Input fields */
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+/* Submit button */
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+/* Link section */
+p a {
+  text-decoration: none;
+  color: #3498db;
+  display: inline-flex;
+  align-items: center;
+ 
+  gap: 6px;
+  font-size: 14px;
+}
+
+p a:hover {
+  text-decoration: underline;
+}

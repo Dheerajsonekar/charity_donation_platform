@@ -14,6 +14,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
+  margin-bottom: 50px;
 }
 
 .navbar .logo {
@@ -168,4 +169,78 @@ body {
     width: 100%;
     text-align: center;
   }
+}
+
+.container {
+  margin-bottom: 30px;
+  max-width: 800px;
+  margin-right:auto;
+  margin-left:auto;
+  background: white;
+  padding: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+h2 {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+.campaign-card {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+.campaign-card:hover {
+  transform: translateY(-4px);
+}
+.campaign-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+.campaign-card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+.campaign-card .goal {
+  font-weight: bold;
+  color: #27ae60;
+}
+.campaign-card .status.completed {
+  color: #2ecc71;
+}
+.campaign-card .status.in-progress {
+  color: #f39c12;
+}
+.campaign-card .status.not-started {
+  color: #e74c3c;
+}
+.campaign-card button {
+  margin-top: 10px;
+  background-color: #3498db;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.campaign-card button:hover {
+  background-color: #2980b9;
+}
+
+/* search box */
+
+.searchBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
 }

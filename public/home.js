@@ -68,3 +68,50 @@ window.addEventListener("click", (e) => {
     authsection.classList.remove("show");
   }
 });
+
+
+ async function fetchCampaigns() {
+            try {
+                const response = await axios.get('/api/campaigns', {
+                    headers: {
+                         Authorization: `Bearer ${token}`,
+                    },
+                });
+                const campaigns = response.data;
+
+                const campaignList = document.getElementById('campaignList');
+                campaignList.innerHTML = '';
+
+                campaigns.forEach(campaign => {
+                    const campaignDiv = document.createElement('div');
+                    campaignDiv.className = 'campaign-card';
+
+                    campaignDiv.innerHTML = `
+                    <img src="${campaign.image}" alt="${campaign.title}" class="campaign-image">
+                    
+
+
+                        
+                        <p>${campaign.description}</p>
+                        <p>${campaign.user}</p>
+                        <p class="goal">Funding Goal: $${campaign.goal}</p>
+                        <p class="raised goal">Amount Raised: $${campaign.raised}</p>
+
+                        <button onclick="donateToCampaign('${campaign.id}')">Share</button>
+                        <button onclick="donateToCampaign('${campaign.id}')">Donate</button>
+                    `;
+
+                    campaignList.appendChild(campaignDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching campaigns:', error);
+            }
+        }
+
+        function donateToCampaign(campaignId) {
+            // Redirect to donation page or handle donation logic
+            alert(`Redirecting to donation page for campaign ID: ${campaignId}`);
+        }
+
+        // Fetch campaigns on page load
+        fetchCampaigns();

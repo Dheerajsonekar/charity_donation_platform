@@ -6,12 +6,14 @@ const path = require('path');
 const cors = require('cors');
 
 const User = require('./models/User');
+const Charity = require('./models/Charity');
 const Campaign = require('./models/Campaign');
 
 const campaignRoutes = require('./routes/campaignRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminAuthRoutes = require('./routes/adminAuthRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const charityRoutes = require('./routes/charityRoutes');
 
 
 
@@ -27,10 +29,18 @@ app.use('/api', adminAuthRoutes);
 app.use('/api', adminRoutes);
 app.use('/api', userRoutes);
 app.use('/api', campaignRoutes);
+app.use('/api', charityRoutes);
 
 //Association 
 User.hasMany(Campaign, { foreignKey: 'userId' });
 Campaign.belongsTo(User, { foreignKey: 'userId' });
+
+User.hasMany(Charity, {foreignKey: 'userId'});
+Charity.belongsTo(User, {foreignKey: 'userId'});
+
+Charity.hasMany(Campaign, {foreignKey: 'charityId'});
+Campaign.belongsTo(Charity, {foreignKey: 'charityId'});
+
 
 db.sync({alter:true}).then(()=>{
     console.log("connected to database successfully");

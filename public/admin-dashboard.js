@@ -10,6 +10,8 @@ function logout() {
 
 const tabs = document.querySelectorAll(".tab");
 const campaignContainer = document.getElementById("campaignContainer");
+const charityContainer = document.getElementById("charityContainer");
+
 let currentStatus = "pending";
 
 tabs.forEach((tab) => {
@@ -22,6 +24,7 @@ tabs.forEach((tab) => {
   });
 });
 
+// for campaigns
 async function fetchCampaigns(status) {
   try {
     const res = await axios.get(`/api/admin/campaigns/${status}`, {
@@ -33,6 +36,19 @@ async function fetchCampaigns(status) {
   }
 }
 
+// for charities
+async function fetchCharities(status) {
+  try {
+    const res = await axios.get(`/api/admin/charities/${status}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    renderCharities(res.data);
+  } catch (err) {
+    console.error("failed to fetch campaigns", err);
+  }
+}
+
+// for render campaign 
 function renderCampaigns(campaigns) {
   campaignContainer.innerHTML = "";
   if (campaigns.length === 0) {
@@ -61,6 +77,37 @@ function renderCampaigns(campaigns) {
   });
 }
 
+//for render charities
+function renderCharities(charities) {
+  charityContainer.innerHTML = "";
+  if (charities.length === 0) {
+    charityContainer.innerHTML = "<p>No no charity to show.</p>";
+    return;
+  }
+
+  charities.forEach((c) => {
+    const div = document.createElement("div");
+    div.className = "campaign";
+    div.innerHTML = `
+          <h3>${c.registrationNumber}</h3>
+          <p><strong>Goal:</strong> ₹${c.name}</p>
+          <p>${c.description}</p>
+          <p><a href=${c.website}>${c.website}</a></p>
+         
+          ${
+            currentStatus === "pending"
+              ? `
+            <button onclick="updateCharityStatus(${c.id}, 'approved')">Approve</button>
+            <button onclick="updateCharityStatus(${c.id}, 'rejected')">Reject</button>
+          `
+              : ""
+          }
+        `;
+    charityContainer.appendChild(div);
+  });
+}
+
+// for campaign
 async function updateStatus(id, status) {
   try {
     const token = localStorage.getItem("token");
@@ -78,5 +125,25 @@ async function updateStatus(id, status) {
   }
 }
 
+//for charities
+async function updateCharityStatus(id, status) {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.put(
+      `/api/admin/charity/${status}/${id}`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    
+    fetchCharities(currentStatus);
+  } catch (err) {
+   console.error("failed to update campaign status", err);
+  }
+}
+
 // Initial load
 fetchCampaigns(currentStatus);
+
+fetchCharities(currentStatus);

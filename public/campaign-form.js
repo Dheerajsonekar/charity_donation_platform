@@ -1,32 +1,132 @@
-const token = localStorage.getItem("token");
+let currentStep = 0;
+const steps = document.querySelectorAll(".form-step");
+const progressBar = document.getElementById("progressBar");
 
-const form = document.getElementById("campaignForm");
-form.addEventListener("submit", async (e) => {
+function showStep(index) {
+  steps.forEach((step, i) => {
+    step.classList.toggle("active", i === index);
+  });
+  progressBar.style.width = ((index + 1) / steps.length) * 100 + "%";
+}
+
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep < steps.length - 1) {
+    currentStep++;
+    showStep(currentStep);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 0) {
+    currentStep--;
+    showStep(currentStep);
+  }
+}
+
+function validateStep(index) {
+  const step = steps[index];
+  const requiredFields = step.querySelectorAll("input[required], select[required], textarea[required]");
+
+  for (let field of requiredFields) {
+    if (!field.value.trim()) {
+      alert("Please fill all required fields.");
+      field.focus();
+      return false;
+    }
+  }
+  return true;
+}
+
+function saveDraft() {
+  const formData = {
+    campaignerName: document.getElementById("campaignerName")?.value || "",
+    campaignerEmail: document.getElementById("campaignerEmail")?.value || "",
+    campaignerPhone: document.getElementById("campaignerPhone")?.value || "",
+    beneficiaryType: document.getElementById("beneficiaryType")?.value || "",
+    campaignTitle: document.getElementById("campaignTitle")?.value || "",
+    goalAmount: document.getElementById("goalAmount")?.value || "",
+    campaignDescription: document.getElementById("campaignDescription")?.value || ""
+    // Add more fields if needed
+  };
+
+  localStorage.setItem("campaignDraft", JSON.stringify(formData));
+  alert("Draft saved!");
+}
+
+function loadDraft() {
+  const draft = localStorage.getItem("campaignDraft");
+  if (draft) {
+    const data = JSON.parse(draft);
+    for (let key in data) {
+      const input = document.getElementById(key);
+      if (input) input.value = data[key];
+    }
+
+    // If beneficiary type was set, show the dynamic fields again
+    const type = data.beneficiaryType;
+    if (type) {
+      document.getElementById("beneficiaryType").value = type;
+      showBeneficiaryFields(); // dynamically injects fields
+    }
+  }
+}
+
+function showBeneficiaryFields() {
+  const type = document.getElementById("beneficiaryType").value;
+  const fieldsDiv = document.getElementById("beneficiaryFields");
+  fieldsDiv.innerHTML = ""; // clear previous fields
+
+  if (type === "individual") {
+    fieldsDiv.innerHTML = `
+      <input type="text" id="beneficiaryName" name="beneficiaryName" placeholder="Your Name" required />
+      <input type="email" id="beneficiaryEmail" name="beneficiaryEmail" placeholder="Your Email" required />
+      <input type="tel" id="beneficiaryPhone" name="beneficiaryPhone" placeholder="Your Phone Number" required />
+    `;
+  } else if (type === "other-individual") {
+    fieldsDiv.innerHTML = `
+      <input type="text" id="beneficiaryName" name="beneficiaryName" placeholder="Beneficiary Name" required />
+      <input type="email" id="beneficiaryEmail" name="beneficiaryEmail" placeholder="Beneficiary Email" required />
+      <input type="tel" id="beneficiaryPhone" name="beneficiaryPhone" placeholder="Beneficiary Phone Number" required />
+    `;
+  } else if (type === "ngo") {
+    fieldsDiv.innerHTML = `
+      <input type="text" id="ngoName" name="ngoName" placeholder="NGO Name" required />
+      <input type="text" id="ngoState" name="ngoState" placeholder="State" required />
+      <input type="text" id="ngoCity" name="ngoCity" placeholder="City" required />
+    `;
+  }
+}
+
+// Final submission
+document.getElementById("campaignForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+  if (!validateStep(currentStep)) return;
 
-  const title = document.getElementById("title").value;
-  const goal = document.getElementById("goal").value;
-  const description = document.getElementById("description").value;
+  const form = document.getElementById("campaignForm");
+  const formData = new FormData(form);
 
   try {
-    const response = await axios.post(
-      "/api/start/campaigns",
-      {
-        title,
-        goal,
-        description,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    const response = await axios.post('/api/start/campaigns', formData, {
+      headers: {
+         Authorization: `Bearer ${localStorage.getItem("token")}`
       }
-    );
-    alert("Campaign created successfullyand send for approval.");
+    });
+
+    alert("Campaign submitted successfully!");
+    localStorage.removeItem("campaignDraft");
     form.reset();
-    window.location.href = "./allCampaign.html"
+    currentStep = 0;
+    showStep(currentStep);
   } catch (error) {
-    console.error(error);
-    alert("Error creating campaign.");
+    console.error("Submission failed:", error);
+    alert("Failed to submit campaign. Please try again.");
   }
+});
+
+
+// Load draft on DOM ready
+window.addEventListener("DOMContentLoaded", () => {
+  showStep(currentStep);
+  loadDraft();
 });

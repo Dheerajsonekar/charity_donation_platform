@@ -4,39 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <title>Admin Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: #f0f0f0;
-            cursor: pointer;
-        }
-
-        .tab.active {
-            background: #007BFF;
-            color: white;
-        }
-
-        .campaign {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        button {
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="./admin-dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
@@ -55,8 +24,12 @@
     </div>
 
     <div id="campaignContainer"></div>
+   
+    
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <div id="charityContainer"></div>
+
+
     <script src="./admin-dashboard.js"></script>
 </body>
 

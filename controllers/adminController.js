@@ -1,4 +1,5 @@
 const Campaign = require('../models/Campaign');
+const Charity = require('../models/Charity');
 const User = require('../models/User');
 // const sendMail = require('../utils/sendMail'); // Uncomment if SendGrid is enabled
 
@@ -46,6 +47,57 @@ exports.updateCampaignStatus = async (req, res) => {
     // });
 
     res.json({ message: `Campaign ${status}` });
+  } catch (err) {
+    res.status(500).json({ message: `Error updating status to ${status}` });
+  }
+};
+
+
+
+// Unified route: /admin/campaigns/:status
+exports.getCharitiesByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const charities = await Charity.findAll({
+      where: { status },
+      include: [{ model: User, attributes: ['name', 'email'] }]
+    });
+
+    res.status(200).json(charities);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch campaigns" });
+  }
+};
+
+// Unified status updater: /admin/campaign/:status/:id
+exports.updateCharityStatus = async (req, res) => {
+  try {
+    const { id, status } = req.params;
+
+    if (!['approved', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status update" });
+    }
+
+    const charity = await Charity.findByPk(id, { include: User });
+
+    if (!charity) return res.status(404).json({ message: "Charity not found" });
+
+    charity.status = status;
+    await charity.save();
+
+    // Optional email notification
+    // await sendMail({
+    //   to: campaign.user.email,
+    //   subject: `Your campaign was ${status}`,
+    //   text: `Hi ${campaign.user.name},\n\nYour campaign "${campaign.title}" has been ${status}.\n\nThanks,\nCharity Team`,
+    // });
+
+    res.json({ message: `Charity ${status}` });
   } catch (err) {
     res.status(500).json({ message: `Error updating status to ${status}` });
   }

@@ -1,24 +1,23 @@
-const db = require('../config/db');
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/db");
 
-const Campaign = db.define('campaign', {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  goal: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  status: {
-    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
-    allowNull: false,
-    defaultValue: 'pending'
-  }
+const Campaign = sequelize.define("Campaign", {
+  campaignerName: DataTypes.STRING,
+  campaignerEmail: DataTypes.STRING,
+  campaignerPhone: DataTypes.STRING,
+
+  beneficiaryType: DataTypes.STRING,
+  beneficiaryName: DataTypes.STRING,
+  beneficiaryEmail: DataTypes.STRING,
+  beneficiaryPhone: DataTypes.STRING,
+  ngoName: DataTypes.STRING,
+  ngoState: DataTypes.STRING,
+  ngoCity: DataTypes.STRING,
+
+  campaignTitle: DataTypes.STRING,
+  campaignDescription: DataTypes.TEXT,
+  goalAmount: DataTypes.FLOAT,
+  imageUrl: DataTypes.STRING,
 });
 
 module.exports = Campaign;

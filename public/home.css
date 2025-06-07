@@ -244,3 +244,133 @@ h2 {
   align-items: center;
   
 }
+
+/* Campaign Card Styling */
+.campaign-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 15px;
+}
+
+.progress-container {
+  width: 100%;
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin: 15px 0;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #27ae60;
+  transition: width 0.5s ease;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.campaign-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.donate-btn, .share-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.donate-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.donate-btn:hover {
+  background-color: #c0392b;
+}
+
+.share-btn {
+  background-color: #3498db;
+  color: white;
+}
+
+.share-btn:hover {
+  background-color: #2980b9;
+}
+
+.error, .no-results {
+  text-align: center;
+  padding: 20px;
+  color: #e74c3c;
+  grid-column: 1 / -1;
+}
+
+.description {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.organizer {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.searchBox {
+    display: flex;
+    background: #f1f1f1;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 8px 12px;
+  }
+
+  .searchBox input[type="text"] {
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    border-radius: 50px;
+    font-size: 16px;
+    flex-grow: 1;
+    background: transparent;
+  }
+
+  .searchBox button {
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin-left: 8px;
+    border-radius: 50px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .searchBox button#resetButton {
+    background-color: #f44336;
+  }
+
+  .searchBox button:hover {
+    opacity: 0.85;
+  }
+
+  .container-search-box {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+  }

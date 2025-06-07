@@ -60,9 +60,9 @@ function renderCampaigns(campaigns) {
     const div = document.createElement("div");
     div.className = "campaign";
     div.innerHTML = `
-          <h3>${c.title}</h3>
-          <p><strong>Goal:</strong> ₹${c.goal}</p>
-          <p>${c.description}</p>
+          <h3>${c.campaignTitle}</h3>
+          <p><strong>Goal:</strong> ₹${c.goalAmount}</p>
+          <p>${c.campaignDescription}</p>
          
           ${
             currentStatus === "pending"
@@ -90,7 +90,7 @@ function renderCharities(charities) {
     div.className = "campaign";
     div.innerHTML = `
           <h3>${c.registrationNumber}</h3>
-          <p><strong>Goal:</strong> ₹${c.name}</p>
+          <p><strong>Goal:</strong> ${c.name}</p>
           <p>${c.description}</p>
           <p><a href=${c.website}>${c.website}</a></p>
          

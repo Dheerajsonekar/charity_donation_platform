@@ -48,6 +48,9 @@ Campaign.belongsTo(Charity, {foreignKey: 'charityId'});
 User.hasMany(Payment, { foreignKey: 'userId' });
 Payment.belongsTo(User, { foreignKey: 'userId' });
 
+Campaign.hasMany(Payment, { foreignKey: 'campaignId' });
+Payment.belongsTo(Campaign, { foreignKey: 'campaignId' });
+
 
 db.sync({alter:true}).then(()=>{
     console.log("connected to database successfully");

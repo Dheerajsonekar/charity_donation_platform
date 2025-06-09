@@ -5,6 +5,8 @@ const User = require("../models/User");
 const Payment = require("../models/Payment");
 const crypto = require("crypto");
 
+const generateReceiptPdf = require("../utils/generateReceiptPdf");
+
 exports.createOrder = async (req, res) => {
   try {
     const { campaignId, amount } = req.body;
@@ -31,7 +33,7 @@ exports.createOrder = async (req, res) => {
         name: user.name,
         email: user.email,
       },
-       razorpayKeyId: process.env.RAZORPAY_KEY_ID
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID,
     });
   } catch (err) {
     console.error("Create order error:", err);
@@ -60,7 +62,8 @@ exports.verifyPayment = async (req, res) => {
       return res.status(404).json({ error: "Campaign not found" });
     }
 
-    campaign.amountRaised = Number(campaign.amountRaised || 0) + Number(amount) / 100;
+    campaign.amountRaised =
+      Number(campaign.amountRaised || 0) + Number(amount) / 100;
     await campaign.save();
 
     await Payment.create({
@@ -72,11 +75,62 @@ exports.verifyPayment = async (req, res) => {
       razorpay_signature,
     });
 
-    
-
     res.json({ success: true });
   } catch (err) {
     console.error("Verify payment error:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.getPayments = async (req, res) => {
+  try {
+    const payments = await Payment.findAll({
+      where: { userId: req.user.userId },
+      include: [{ model: Campaign, attributes: ["campaignTitle"] }],
+    });
+
+    res.json(payments);
+  } catch (err) {
+    console.error("Get payments error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.generateReceipt = async (req, res) => {
+  try {
+    const donationId = req.params.id;
+    const donation = await Payment.findByPk(donationId, {
+      include: [
+        { model: User },
+        { model: Campaign, attributes: ["campaignTitle"] },
+      ],
+    });
+
+    console.log("Donation:", donation);
+    if (!donation)
+      return res.status(404).json({ message: "Donation not found" });
+
+    if (!donation.user) {
+      return res.status(500).json({
+        message: "Donation User not found for this donation",
+        donation,
+      });
+    }
+
+    // If receipt URL already exists, return it
+    if (donation.receiptUrl)
+      return res.json({ receiptUrl: donation.receiptUrl });
+
+    const pdfUrl = await generateReceiptPdf(donation, donation.user);
+
+    // Save receipt URL to DB
+    donation.receiptUrl = pdfUrl;
+    await donation.save();
+
+    res.json({ receiptUrl: pdfUrl });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to generate receipt", error: error.message });
   }
 };

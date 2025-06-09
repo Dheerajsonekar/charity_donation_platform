@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Donation History</title>
@@ -16,7 +17,7 @@
       background: white;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     h2 {
@@ -28,7 +29,8 @@
       border-collapse: collapse;
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px;
       border: 1px solid #ddd;
       text-align: left;
@@ -39,7 +41,9 @@
       color: white;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
+
 <body>
   <div class="container">
     <h2>My Donation History</h2>
@@ -50,37 +54,82 @@
           <th>Charity</th>
           <th>Amount</th>
           <th>Date</th>
+          <th>Receipt</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Fetched rows will appear here -->
+       
       </tbody>
     </table>
   </div>
 
   <script>
-    const token = localStorage.getItem("token");
 
-    fetch("/api/user/donations", {
-      headers: {
-        Authorization: token
-      }
-    })
-    .then(res => res.json())
-    .then(donations => {
-      const tableBody = document.querySelector("#donationTable tbody");
-      donations.forEach((donation, index) => {
-        const row = `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${donation.charityName}</td>
-            <td>₹${donation.amount}</td>
-            <td>${new Date(donation.timestamp).toLocaleString()}</td>
-          </tr>
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('You must be logged in to view this page.');
+      window.location.href = '/login.html';
+    }
+
+    async function fetchDonations() {
+      try {
+        const res = await axios('/api/payments/user/donations', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const donations = res.data;
+        console.log( donations);
+        const tbody = document.querySelector('#donationTable tbody');
+        tbody.innerHTML = '';
+
+        donations.forEach((donation, index) => {
+          const receiptCell = document.createElement('td');
+
+          if (donation.receiptUrl) {
+            receiptCell.innerHTML = `<a href="${donation.receiptUrl}" target="_blank" class="btn">Download Receipt</a>`;
+          } else {
+            const btn = document.createElement('button');
+            btn.textContent = 'Generate Receipt';
+            btn.onclick =  async () => await generateReceipt(donation.id, receiptCell);
+            receiptCell.appendChild(btn);
+          }
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${donation.Campaign.campaignTitle}</td>
+          <td>₹${donation.amount}</td>
+          <td>${new Date(donation.createdAt).toLocaleString()}</td>
         `;
-        tableBody.insertAdjacentHTML("beforeend", row);
-      });
-    });
+          row.appendChild(receiptCell);
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        alert('Error loading donations');
+        console.error(error);
+      }
+    }
+
+    async function generateReceipt(donationId, cell) {
+      try {
+        const res = await axios(`/api/payments/user/donations/${donationId}/receipt`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = res.data;
+        console.log(data);
+        if (data.receiptUrl) {
+          cell.innerHTML = `<a href="${data.receiptUrl}" target="_blank" class="btn">Download Receipt</a>`;
+        } else {
+          cell.textContent = 'Receipt Not Available';
+        }
+      } catch (error) {
+        alert('Failed to generate receipt');
+        console.error(error);
+      }
+    }
+
+    fetchDonations();
   </script>
 </body>
+
 </html>

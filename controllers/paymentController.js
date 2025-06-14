@@ -6,6 +6,7 @@ const Payment = require("../models/Payment");
 const crypto = require("crypto");
 
 const generateReceiptPdf = require("../utils/generateReceiptPdf");
+const{ sendEmail }= require("../utils/sendEmail");
 
 exports.createOrder = async (req, res) => {
   try {
@@ -17,7 +18,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const options = {
-      amount: amount,
+      amount: amount*100,
       currency: "INR",
       receipt: `receipt_order_${Date.now()}`,
     };
@@ -63,17 +64,29 @@ exports.verifyPayment = async (req, res) => {
     }
 
     campaign.amountRaised =
-      Number(campaign.amountRaised || 0) + Number(amount) / 100;
+      Number(campaign.amountRaised || 0) + Number(amount) ;
     await campaign.save();
 
-    await Payment.create({
+    const payment = await Payment.create({
       userId: req.user.userId,
       campaignId,
-      amount: Number(amount) / 100,
+      amount: Number(amount) ,
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
     });
+
+
+    const html = `
+      <h3>Thank you for your donation!</h3>
+      <p>You donated ₹${amount} to <strong>${campaign.campaignTitle}</strong>.</p>
+      <p>Payment order id: ${razorpay_order_id}</p>
+      <p>Payment id: ${razorpay_payment_id}</p>
+      <p>Date: ${new Date(payment.createdAt).toLocaleString()}</p>
+    `;
+     const user = await User.findByPk(req.user.userId);
+     console.log("user.email", user.email);
+    await sendEmail(user.email, 'Donation Confirmation', html);
 
     res.json({ success: true });
   } catch (err) {
@@ -81,20 +94,21 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.findAll({
       where: { userId: req.user.userId },
       include: [{ model: Campaign, attributes: ["campaignTitle"] }],
+      attributes: ['id', 'userId', 'campaignId', 'amount', 'createdAt', 'receiptUrl', 'impactReportUrl'] // ✅ include this!
     });
 
-    res.json(payments);
+    res.status(200).json(payments);
   } catch (err) {
     console.error("Get payments error:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 exports.generateReceipt = async (req, res) => {
   try {

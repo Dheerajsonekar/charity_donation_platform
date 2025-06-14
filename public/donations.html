@@ -4,43 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Donation History</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 40px;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-      margin-bottom: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-
-    th {
-      background-color: #3498db;
-      color: white;
-    }
-  </style>
+  <link rel="stylesheet" href="donation.css" />
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
@@ -55,80 +19,17 @@
           <th>Amount</th>
           <th>Date</th>
           <th>Receipt</th>
+          <th>Impact report</th>
         </tr>
       </thead>
       <tbody>
-       
+
       </tbody>
     </table>
   </div>
 
-  <script>
+  <script src="donation.js">
 
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-      alert('You must be logged in to view this page.');
-      window.location.href = '/login.html';
-    }
-
-    async function fetchDonations() {
-      try {
-        const res = await axios('/api/payments/user/donations', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const donations = res.data;
-        console.log( donations);
-        const tbody = document.querySelector('#donationTable tbody');
-        tbody.innerHTML = '';
-
-        donations.forEach((donation, index) => {
-          const receiptCell = document.createElement('td');
-
-          if (donation.receiptUrl) {
-            receiptCell.innerHTML = `<a href="${donation.receiptUrl}" target="_blank" class="btn">Download Receipt</a>`;
-          } else {
-            const btn = document.createElement('button');
-            btn.textContent = 'Generate Receipt';
-            btn.onclick =  async () => await generateReceipt(donation.id, receiptCell);
-            receiptCell.appendChild(btn);
-          }
-
-          const row = document.createElement('tr');
-          row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${donation.Campaign.campaignTitle}</td>
-          <td>₹${donation.amount}</td>
-          <td>${new Date(donation.createdAt).toLocaleString()}</td>
-        `;
-          row.appendChild(receiptCell);
-          tbody.appendChild(row);
-        });
-      } catch (error) {
-        alert('Error loading donations');
-        console.error(error);
-      }
-    }
-
-    async function generateReceipt(donationId, cell) {
-      try {
-        const res = await axios(`/api/payments/user/donations/${donationId}/receipt`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = res.data;
-        console.log(data);
-        if (data.receiptUrl) {
-          cell.innerHTML = `<a href="${data.receiptUrl}" target="_blank" class="btn">Download Receipt</a>`;
-        } else {
-          cell.textContent = 'Receipt Not Available';
-        }
-      } catch (error) {
-        alert('Failed to generate receipt');
-        console.error(error);
-      }
-    }
-
-    fetchDonations();
   </script>
 </body>
 

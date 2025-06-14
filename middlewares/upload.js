@@ -14,11 +14,13 @@ const s3 = new S3Client({
 
 const storage = multer.memoryStorage();
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+const fileFilter =  (req, file, cb) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "application/pdf"];
+
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Invalid file type, only images allowed!"), false);
+    cb(new Error("Invalid file type. Only images and PDF files are allowed!"), false);
   }
 };
 

@@ -11,4 +11,11 @@ router.get('/admin/charities/:status', auth, adminController.getCharitiesByStatu
 router.put('/admin/campaign/:status/:id', auth, adminController.updateCampaignStatus);
 router.put('/admin/charity/:status/:id', auth, adminController.updateCharityStatus);
 
+router.get('/admin/users', auth, adminController.getAllUsers);
+router.put('/admin/user/:id/status', auth, adminController.updateUserStatus);
+router.delete('/admin/user/:id', auth, adminController.deleteUser);
+
+
+
+
 module.exports = router;

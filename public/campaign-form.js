@@ -26,7 +26,9 @@ function prevStep() {
 
 function validateStep(index) {
   const step = steps[index];
-  const requiredFields = step.querySelectorAll("input[required], select[required], textarea[required]");
+  const requiredFields = step.querySelectorAll(
+    "input[required], select[required], textarea[required]"
+  );
 
   for (let field of requiredFields) {
     if (!field.value.trim()) {
@@ -46,7 +48,8 @@ function saveDraft() {
     beneficiaryType: document.getElementById("beneficiaryType")?.value || "",
     campaignTitle: document.getElementById("campaignTitle")?.value || "",
     goalAmount: document.getElementById("goalAmount")?.value || "",
-    campaignDescription: document.getElementById("campaignDescription")?.value || ""
+    campaignDescription:
+      document.getElementById("campaignDescription")?.value || "",
     // Add more fields if needed
   };
 
@@ -72,7 +75,7 @@ function loadDraft() {
   }
 }
 
-function showBeneficiaryFields() {
+async function showBeneficiaryFields() {
   const type = document.getElementById("beneficiaryType").value;
   const fieldsDiv = document.getElementById("beneficiaryFields");
   fieldsDiv.innerHTML = ""; // clear previous fields
@@ -90,40 +93,66 @@ function showBeneficiaryFields() {
       <input type="tel" id="beneficiaryPhone" name="beneficiaryPhone" placeholder="Beneficiary Phone Number" required />
     `;
   } else if (type === "ngo") {
-    fieldsDiv.innerHTML = `
-      <input type="text" id="ngoName" name="ngoName" placeholder="NGO Name" required />
+     fieldsDiv.innerHTML = `
+      <label for="ngoName">Select Approved NGO:</label>
+      <select id="ngoName" name="ngoName" required>
+        <option value="">Loading NGOs...</option>
+      </select>
       <input type="text" id="ngoState" name="ngoState" placeholder="State" required />
       <input type="text" id="ngoCity" name="ngoCity" placeholder="City" required />
     `;
   }
+
+  try {
+    const response = await axios.get("/api/approved-ngos", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    const ngoSelect = document.getElementById("ngoName");
+    ngoSelect.innerHTML = '<option value="">Select an approved NGO</option>';
+    console.log(response.data);
+    response.data.approvedNgos.forEach((ngo) => {
+      const option = document.createElement("option");
+      option.value = ngo.name;
+      option.textContent = ngo.name;
+      ngoSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Failed to load NGOs:", error);
+    const ngoSelect = document.getElementById("ngoName");
+    ngoSelect.innerHTML = '<option value="">Failed to load NGOs</option>';
+  }
 }
 
 // Final submission
-document.getElementById("campaignForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (!validateStep(currentStep)) return;
+document
+  .getElementById("campaignForm")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!validateStep(currentStep)) return;
 
-  const form = document.getElementById("campaignForm");
-  const formData = new FormData(form);
+    const form = document.getElementById("campaignForm");
+    const formData = new FormData(form);
 
-  try {
-    const response = await axios.post('/api/start/campaigns', formData, {
-      headers: {
-         Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    });
+    try {
+      const response = await axios.post("/api/start/campaigns", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
-    alert("Campaign submitted successfully!");
-    localStorage.removeItem("campaignDraft");
-    form.reset();
-    currentStep = 0;
-    showStep(currentStep);
-  } catch (error) {
-    console.error("Submission failed:", error);
-    alert("Failed to submit campaign. Please try again.");
-  }
-});
-
+      alert("Campaign submitted successfully!");
+      localStorage.removeItem("campaignDraft");
+      form.reset();
+      currentStep = 0;
+      showStep(currentStep);
+    } catch (error) {
+      console.error("Submission failed:", error);
+      alert("Failed to submit campaign. Please try again.");
+    }
+  });
 
 // Load draft on DOM ready
 window.addEventListener("DOMContentLoaded", () => {

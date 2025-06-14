@@ -18,11 +18,14 @@ if (token) {
     })
     .then((res) => {
       // Update profile picture if available
+     
+      console.log("User profile data:", res.data);
       if (res.data.avatar) {
         document.getElementById(
           "profilePic"
         ).style.backgroundImage = `url(${res.data.avatar})`;
       }
+      
     })
     .catch((err) => {
       console.error(err);
@@ -75,10 +78,8 @@ window.addEventListener("click", (e) => {
 async function fetchCampaigns(searchTerm = "") {
   try {
     const response = await axios.get(
-      `/api/campaigns?search=${encodeURIComponent(searchTerm)}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      `/api/campaigns?search=${encodeURIComponent(searchTerm)}`
+      
     );
     displayCampaigns(response.data.campaigns);
   } catch (error) {
@@ -113,7 +114,7 @@ function displayCampaigns(campaigns) {
       <h3>${campaign.campaignTitle}</h3>
       <p class="description">${campaign.campaignDescription.substring(
         0,
-        100
+        50
       )}...</p>
       <p class="organizer">By: ${campaign.campaignerName}</p>
       
@@ -121,8 +122,8 @@ function displayCampaigns(campaigns) {
         <div class="progress-bar" style="width: ${progressPercent}%"></div>
       </div>
       <div class="progress-text">
-        <span>$${campaign.amountRaised || 0} raised</span>
-        <span>${progressPercent}% of $${campaign.goalAmount}</span>
+        <span>Rs.${campaign.amountRaised || 0} raised</span>
+        <span>${progressPercent}% of Rs.${campaign.goalAmount}</span>
       </div>
       
       <div class="campaign-buttons">
@@ -176,7 +177,7 @@ function initiateDonation(campaignId) {
       "/api/payments/create-order",
       {
         campaignId,
-        amount: parseFloat(amount) * 100, // Convert to paise
+        amount: parseFloat(amount), 
       },
       {
         headers: { Authorization: `Bearer ${token}` },
@@ -184,7 +185,7 @@ function initiateDonation(campaignId) {
     )
     .then((response) => {
       const options = {
-        key: response.data.razorpayKeyId, // fixed line
+        key: response.data.razorpayKeyId, 
         amount: response.data.amount,
         currency: "INR",
         name: "DonateKart",
@@ -226,7 +227,7 @@ function verifyPayment(paymentResponse, campaignId, amount) {
     )
     .then(() => {
       alert("Payment successful! Thank you for your donation.");
-      fetchCampaigns(); // Refresh campaign list
+      fetchCampaigns(); 
     })
     .catch((error) => {
       console.error("Payment verification failed:", error);
@@ -253,7 +254,7 @@ function shareCampaign(campaignId, title) {
   }
 }
 
-// Load campaigns on page load
+
 fetchCampaigns();
 
 // Load Razorpay script dynamically

@@ -102,3 +102,51 @@ exports.updateCharityStatus = async (req, res) => {
     res.status(500).json({ message: `Error updating status to ${status}` });
   }
 };
+
+
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'isActive', 'createdAt']
+    });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error("Error fetching users", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.updateUserStatus = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { isActive } = req.body;
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.isActive = isActive;
+    await user.save();
+
+    res.json({ success: true, message: "User status updated." });
+  } catch (err) {
+    console.error("Error updating user status", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    await user.destroy();
+
+    res.json({ success: true, message: "User deleted." });
+  } catch (err) {
+    console.error("Error deleting user", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

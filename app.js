@@ -10,12 +10,14 @@ const Charity = require('./models/Charity');
 const Campaign = require('./models/Campaign');
 const Payment = require('./models/Payment');
 
+
 const campaignRoutes = require('./routes/campaignRoutes');
 const userRoutes = require('./routes/userRoutes');
 const adminAuthRoutes = require('./routes/adminAuthRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const charityRoutes = require('./routes/charityRoutes');
-const paymentsRouter = require("./routes/paymentRoutes");
+const paymentsRoutes = require("./routes/paymentRoutes");
+
 
 
 
@@ -33,7 +35,8 @@ app.use('/api', adminRoutes);
 app.use('/api', userRoutes);
 app.use('/api', campaignRoutes);
 app.use('/api', charityRoutes);
-app.use("/api/payments", paymentsRouter);
+app.use("/api/payments", paymentsRoutes);
+
 
 //Association 
 User.hasMany(Campaign, { foreignKey: 'userId' });
@@ -50,6 +53,9 @@ Payment.belongsTo(User, { foreignKey: 'userId' });
 
 Campaign.hasMany(Payment, { foreignKey: 'campaignId' });
 Payment.belongsTo(Campaign, { foreignKey: 'campaignId' });
+
+
+
 
 
 db.sync({alter:true}).then(()=>{

@@ -2,6 +2,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const sequelize = require("../config/db");
 const jwt = require('jsonwebtoken');
+const{ sendEmail }= require("../utils/sendEmail");
 
 exports.register = async (req, res) => {
   const t = await sequelize.transaction();
@@ -87,6 +88,14 @@ exports.updateProfile = async (req, res) => {
     user.name = name;
     user.phone = phone;
     await user.save();
+
+    const html = `
+      <h3>Your profile has been updated!</h3>
+      
+    `;
+     
+    console.log("user.email", user.email);
+    await sendEmail(user.email, 'profile updated', html);
 
     res.status(200).json({ message: "Profile updated successfully" });
   } catch (err) {

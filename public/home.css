@@ -173,7 +173,7 @@ body {
 
 .container {
   margin-bottom: 30px;
-  max-width: 800px;
+  max-width: 1000px;
   margin-right:auto;
   margin-left:auto;
   background: white;
@@ -374,3 +374,68 @@ h2 {
     justify-content: center;
     margin-top: 30px;
   }
+
+  .footer {
+  background: #222;
+  color: #fff;
+  padding: 30px 0 10px;
+  font-size: 14px;
+  margin-top: 50px;
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  margin-bottom: 10px;
+  color: #ffcc00;
+}
+
+.footer-section p,
+.footer-section a {
+  color: #ccc;
+  text-decoration: none;
+  line-height: 1.6;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section ul li a:hover {
+  color: #fff;
+}
+
+.social-icons a {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.social-icons img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(90%);
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 1px solid #444;
+  font-size: 13px;
+  color: #aaa;
+}
+

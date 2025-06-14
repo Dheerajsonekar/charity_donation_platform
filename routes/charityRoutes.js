@@ -7,5 +7,6 @@ const auth = require('../middlewares/auth');
 router.post('/addcharity',auth, charityController.addCharity);
 router.put('/updatecharity/:charityId', auth, charityController.updateCharity);
 router.get('/getcharities', auth, charityController.getCharities);
+router.get('/approved-ngos', auth, charityController.getApprovedNgo);
 
 module.exports = router;

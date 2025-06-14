@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>My campaigns</title>
-    <link rel="stylesheet" href="./charity.css">
+    <link rel="stylesheet" href="./my-campaign.css">
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
@@ -14,11 +15,19 @@
         <div id="campaignsContainer">
             <!-- Campaigns will be populated here -->
         </div>
-
     </div>
 
-    <script src="./charity.js"></script>
+    <!-- Modal to show details -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Campaign Details</h3>
+            <div id="paymentHistory"></div>
+            <div id="impactReport"></div>
+        </div>
+    </div>
 
+    <script src="./my-campaign.js"></script>
 </body>
 
 </html>

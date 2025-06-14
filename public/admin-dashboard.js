@@ -20,9 +20,15 @@ tabs.forEach((tab) => {
     tab.classList.add("active");
     currentStatus = tab.dataset.status;
 
-    fetchCampaigns(currentStatus);
+    if (currentStatus === "users") {
+      fetchUsers();
+    } else {
+      fetchCampaigns(currentStatus);
+      fetchCharities(currentStatus);
+    }
   });
 });
+
 
 // for campaigns
 async function fetchCampaigns(status) {
@@ -142,6 +148,75 @@ async function updateCharityStatus(id, status) {
    console.error("failed to update campaign status", err);
   }
 }
+
+async function fetchUsers() {
+  try {
+    const res = await axios.get(`/api/admin/users`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    renderUsers(res.data);
+  } catch (err) {
+    console.error("Failed to fetch users", err);
+  }
+}
+
+function renderUsers(users) {
+  const userContainer = document.getElementById("userContainer");
+  userContainer.innerHTML = "";
+  campaignContainer.innerHTML = ""; // hide others
+  charityContainer.innerHTML = "";
+
+  if (users.length === 0) {
+    userContainer.innerHTML = "<p>No users to show.</p>";
+    return;
+  }
+
+  users.forEach((u) => {
+    const div = document.createElement("div");
+    div.className = "campaign"; // same style
+    div.innerHTML = `
+      <h3>${u.name} (${u.email})</h3>
+      <p><strong>Status:</strong> ${u.isActive ? "Active" : "Inactive"}</p>
+      <button onclick="toggleUserStatus(${u.id}, ${!u.isActive})">
+        ${u.isActive ? "Deactivate" : "Activate"}
+      </button>
+      <button onclick="deleteUser(${u.id})" style="background: #e74c3c; color: white;">
+        Delete
+      </button>
+    `;
+    userContainer.appendChild(div);
+  });
+}
+
+async function toggleUserStatus(userId, newStatus) {
+  try {
+    await axios.put(
+      `/api/admin/user/${userId}/status`,
+      { isActive: newStatus },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    fetchUsers();
+  } catch (err) {
+    console.error("Failed to update user status", err);
+  }
+}
+
+async function deleteUser(userId) {
+  if (!confirm("Are you sure you want to delete this user?")) return;
+
+  try {
+    await axios.delete(`/api/admin/user/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchUsers();
+  } catch (err) {
+    console.error("Failed to delete user", err);
+  }
+}
+
+
 
 // Initial load
 fetchCampaigns(currentStatus);

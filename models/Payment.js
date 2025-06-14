@@ -8,7 +8,8 @@ const Payment = db.define("Payment", {
     razorpay_order_id: { type: DataTypes.STRING, allowNull: false },
     razorpay_payment_id: { type: DataTypes.STRING, allowNull: false },
     razorpay_signature: { type: DataTypes.STRING, allowNull: false },
-    receiptUrl: { type: DataTypes.STRING } 
+    receiptUrl: { type: DataTypes.STRING } ,
+    impactReportUrl: { type: DataTypes.STRING, default: null}
 
   });
 

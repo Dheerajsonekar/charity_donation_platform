@@ -1,31 +1,38 @@
 body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-        .tab {
-            padding: 10px 20px;
-            background: #f0f0f0;
-            cursor: pointer;
-        }
+.tab {
+  padding: 10px 20px;
+  background: #f0f0f0;
+  cursor: pointer;
+}
 
-        .tab.active {
-            background: #007BFF;
-            color: white;
-        }
+.tab.active {
+  background: #007bff;
+  color: white;
+}
 
-        .campaign {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
+.campaign {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+}
 
-        button {
-            margin-right: 10px;
-        }
+button {
+  margin-right: 10px;
+}
+
+#userContainer .campaign {
+  border: 1px solid #ccc;
+  padding: 16px;
+  margin-top: 10px;
+  border-radius: 8px;
+}

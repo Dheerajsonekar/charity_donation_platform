@@ -8,7 +8,7 @@ form.addEventListener('submit', async (e)=>{
 
 
     try{
-      const response = await axios.post('http://localhost:3000/api/login', {email, password});
+      const response = await axios.post('http://13.126.68.225:3000/api/login', {email, password});
       
       if(response.status === 200){
         localStorage.setItem('token', response.data.token);

@@ -10,7 +10,7 @@ form.addEventListener('submit', async (e)=>{
  }
 
  try{
-     await axios.post('http://localhost:3000/api/register', user);
+     await axios.post('http://13.126.68.225:3000/api/register', user);
     
     console.log("user registered successfully");
     form.reset();

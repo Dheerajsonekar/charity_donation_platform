@@ -110,8 +110,8 @@ function displayCampaigns(campaigns) {
     campaignDiv.innerHTML = `
       <img src="${
         campaign.campaignImageUrl || "/placeholder-image.jpg"
-      }" alt="${campaign.campaignTitle.substring(0, 20)}..." class="campaign-image">
-      <h3>${campaign.campaignTitle}</h3>
+      }" alt="${campaign.campaignTitle}" class="campaign-image">
+      <h3>${campaign.campaignTitle.substring(0, 20)}</h3>
       <p class="description">${campaign.campaignDescription.substring(
         0,
         50

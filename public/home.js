@@ -111,7 +111,7 @@ function displayCampaigns(campaigns) {
       <img src="${
         campaign.campaignImageUrl || "/placeholder-image.jpg"
       }" alt="${campaign.campaignTitle}" class="campaign-image">
-      <h3>${campaign.campaignTitle.substring(0, 30)}</h3>
+      <h3>${campaign.campaignTitle.substring(0, 40)}</h3>
       <p class="description">${campaign.campaignDescription.substring(
         0,
         50

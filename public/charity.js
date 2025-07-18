@@ -39,35 +39,38 @@ form.addEventListener("submit", async (e) => {
 
 async function fetchCharities() {
   try {
-    const response = await axios.get("/api/getcharities", {
+    const response = await axios.get(`${window.APP_CONFIG.API_BASE_URL}/api/getcharities`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
     });
 
-    const charities = response.data.charities;
-    const charityDiv = document.getElementById("charityDetails");
-    charityDiv.innerHTML = "";
-    if (charities.length === 0) {
-      charityDiv.innerHTML = "<p>No charities found for this user</p>";
-      return;
-    }
+    if (response.data.success !== false) {
+      const charities = response.data.charities;
+      const charityDiv = document.getElementById("charityDetails");
+      charityDiv.innerHTML = "";
+      
+      if (charities.length === 0) {
+        charityDiv.innerHTML = "<p>No charities found for this user</p>";
+        return;
+      }
 
-    charities.forEach((charity) => {
-      const charityCard = document.createElement("div");
-      charityCard.className = "charity-card";
-      charityCard.innerHTML = `
-                <h3>${charity.name}</h3>
-                <p><strong>Registration Number:</strong> ${charity.registrationNumber}</p>
-               
-                <p><strong>Description:</strong> ${charity.description}</p>
-                <p><strong>Website:</strong> <a href="${charity.website}" target="_blank">${charity.website}</a></p>
-                 <p><strong>Status:</strong> ${charity.status}</p>
-            `;
-      charityDiv.appendChild(charityCard);
-    });
+      charities.forEach((charity) => {
+        const charityCard = document.createElement("div");
+        charityCard.className = "charity-card";
+        charityCard.innerHTML = `
+                  <h3>${charity.name}</h3>
+                  <p><strong>Registration Number:</strong> ${charity.registrationNumber}</p>
+                  <p><strong>Description:</strong> ${charity.description}</p>
+                  <p><strong>Website:</strong> <a href="${charity.website}" target="_blank">${charity.website}</a></p>
+                  <p><strong>Status:</strong> <span class="status-${charity.status}">${charity.status}</span></p>
+              `;
+        charityDiv.appendChild(charityCard);
+      });
+    }
   } catch (err) {
     console.error("Error fetching charities: ", err);
+    alert("Failed to load charities. Please try again.");
   }
 }
 

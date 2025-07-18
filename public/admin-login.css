@@ -16,7 +16,7 @@ body {
   height: 100vh;
 }
 
-/* Heading */
+
 h2 {
   margin-bottom: 30px;
   
@@ -26,7 +26,7 @@ h2 {
 
 }
 
-/* Form Container */
+
 form#loginForm {
   background-color: #ffffff;
   padding: 32px;
@@ -38,7 +38,7 @@ form#loginForm {
   flex-direction: column;
 }
 
-/* Input Fields */
+
 form#loginForm input {
   width: 100%;
   padding: 12px;
@@ -48,7 +48,7 @@ form#loginForm input {
   border-radius: 6px;
 }
 
-/* Submit Button */
+
 form#loginForm button {
   width: 100%;
   padding: 12px;
@@ -66,7 +66,7 @@ form#loginForm button:hover {
   background-color: #1a242f;
 }
 
-/* Paragraph Links */
+
 p {
   margin-top: 16px;
   font-size: 14px;

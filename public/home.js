@@ -12,23 +12,17 @@ if (token) {
   loginBtn.style.display = "none";
   profileContainer.style.display = "block";
 
-  axios
-    .get("/api/user/profile", {
+  axios.get(`${API_BASE_URL}/api/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
-      // Update profile picture if available
-     
       console.log("User profile data:", res.data);
-      if (res.data.avatar) {
-        document.getElementById(
-          "profilePic"
-        ).style.backgroundImage = `url(${res.data.avatar})`;
+      if (res.data.user.avatar) {
+        document.getElementById("profilePic").style.backgroundImage = `url(${res.data.user.avatar})`;
       }
-      
     })
     .catch((err) => {
-      console.error(err);
+      console.error('Profile fetch error:', err);
       localStorage.removeItem("token");
       loginBtn.style.display = "block";
       profileContainer.style.display = "none";
@@ -78,14 +72,17 @@ window.addEventListener("click", (e) => {
 async function fetchCampaigns(searchTerm = "") {
   try {
     const response = await axios.get(
-      `/api/campaigns?search=${encodeURIComponent(searchTerm)}`
-      
+      `${API_BASE_URL}/api/campaigns?search=${encodeURIComponent(searchTerm)}`
     );
-    displayCampaigns(response.data.campaigns);
+    
+    if (response.data.success) {
+      displayCampaigns(response.data.campaigns);
+    } else {
+      throw new Error(response.data.message || 'Failed to fetch campaigns');
+    }
   } catch (error) {
     console.error("Error fetching campaigns:", error);
-    campaignList.innerHTML =
-      '<p class="error">Error loading campaigns. Please try again later.</p>';
+    campaignList.innerHTML = '<p class="error">Error loading campaigns. Please try again later.</p>';
   }
 }
 
@@ -111,7 +108,7 @@ function displayCampaigns(campaigns) {
       <img src="${
         campaign.campaignImageUrl || "/placeholder-image.jpg"
       }" alt="${campaign.campaignTitle}" class="campaign-image">
-      <h3>${campaign.campaignTitle.substring(0, 40)}</h3>
+      <h3>${campaign.campaignTitle.substring(0, 40)}...</h3>
       <p class="description">${campaign.campaignDescription.substring(
         0,
         50
@@ -167,32 +164,38 @@ function initiateDonation(campaignId) {
   }
 
   const amount = prompt("Enter donation amount (INR):");
-  if (!amount || isNaN(amount)) {
-    alert("Please enter a valid amount");
+  if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+    alert("Please enter a valid amount greater than 0");
     return;
   }
 
-  axios
-    .post(
-      "/api/payments/create-order",
-      {
-        campaignId,
-        amount: parseFloat(amount), 
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
+  // Show loading state
+  const donateButtons = document.querySelectorAll('.donate-btn');
+  donateButtons.forEach(btn => {
+    btn.textContent = 'Processing...';
+    btn.disabled = true;
+  });
+
+  axios.post(`${API_BASE_URL}/api/payments/create-order`, {
+      campaignId,
+      amount: parseFloat(amount), 
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     .then((response) => {
+      if (!response.data.razorpayKeyId) {
+        throw new Error('Payment configuration error');
+      }
+
       const options = {
         key: response.data.razorpayKeyId, 
         amount: response.data.amount,
         currency: "INR",
         name: "DonateKart",
-        description: `Donation for Campaign ${campaignId}`,
+        description: `Donation for Campaign`,
         order_id: response.data.id,
-        handler: function (response) {
-          verifyPayment(response, campaignId, amount);
+        handler: function (paymentResponse) {
+          verifyPayment(paymentResponse, campaignId, amount);
         },
         prefill: {
           name: response.data.user.name,
@@ -201,6 +204,15 @@ function initiateDonation(campaignId) {
         theme: {
           color: "#3399cc",
         },
+        modal: {
+          ondismiss: function() {
+            // Reset button states
+            donateButtons.forEach(btn => {
+              btn.textContent = '❤ Donate';
+              btn.disabled = false;
+            });
+          }
+        }
       };
 
       const rzp = new Razorpay(options);
@@ -208,32 +220,48 @@ function initiateDonation(campaignId) {
     })
     .catch((error) => {
       console.error("Payment error:", error);
-      alert("Error initiating payment. Please try again.");
+      const errorMessage = error.response?.data?.message || "Error initiating payment. Please try again.";
+      alert(errorMessage);
+      
+      // Reset button states
+      donateButtons.forEach(btn => {
+        btn.textContent = '❤ Donate';
+        btn.disabled = false;
+      });
     });
 }
 
+
 function verifyPayment(paymentResponse, campaignId, amount) {
-  axios
-    .post(
-      "/api/payments/verify",
-      {
-        paymentResponse,
-        campaignId,
-        amount,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
+  axios.post(`${API_BASE_URL}/api/payments/verify`, {
+      paymentResponse,
+      campaignId,
+      amount,
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => {
+      if (response.data.success) {
+        alert("Payment successful! Thank you for your donation. You'll receive an email confirmation shortly.");
+        fetchCampaigns(); // Refresh campaigns to show updated amounts
+      } else {
+        throw new Error(response.data.message || 'Payment verification failed');
       }
-    )
-    .then(() => {
-      alert("Payment successful! Thank you for your donation.");
-      fetchCampaigns(); 
     })
     .catch((error) => {
       console.error("Payment verification failed:", error);
-      alert("Payment verification failed. Please contact support.");
+      alert("Payment verification failed. Please contact support with your payment details.");
+    })
+    .finally(() => {
+      // Reset button states
+      const donateButtons = document.querySelectorAll('.donate-btn');
+      donateButtons.forEach(btn => {
+        btn.textContent = '❤ Donate';
+        btn.disabled = false;
+      });
     });
 }
+
 
 // Share functionality
 function shareCampaign(campaignId, title) {

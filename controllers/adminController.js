@@ -1,9 +1,9 @@
 const Campaign = require('../models/Campaign');
 const Charity = require('../models/Charity');
 const User = require('../models/User');
-// const sendMail = require('../utils/sendMail'); // Uncomment if SendGrid is enabled
 
-// Unified route: /admin/campaigns/:status
+
+
 exports.getCampaignsByStatus = async (req, res) => {
   try {
     const { status } = req.params;
@@ -23,7 +23,7 @@ exports.getCampaignsByStatus = async (req, res) => {
   }
 };
 
-// Unified status updater: /admin/campaign/:status/:id
+
 exports.updateCampaignStatus = async (req, res) => {
   try {
     const { id, status } = req.params;
@@ -39,12 +39,7 @@ exports.updateCampaignStatus = async (req, res) => {
     campaign.status = status;
     await campaign.save();
 
-    // Optional email notification
-    // await sendMail({
-    //   to: campaign.user.email,
-    //   subject: `Your campaign was ${status}`,
-    //   text: `Hi ${campaign.user.name},\n\nYour campaign "${campaign.title}" has been ${status}.\n\nThanks,\nCharity Team`,
-    // });
+    
 
     res.json({ message: `Campaign ${status}` });
   } catch (err) {
@@ -54,7 +49,6 @@ exports.updateCampaignStatus = async (req, res) => {
 
 
 
-// Unified route: /admin/campaigns/:status
 exports.getCharitiesByStatus = async (req, res) => {
   try {
     const { status } = req.params;
@@ -74,7 +68,7 @@ exports.getCharitiesByStatus = async (req, res) => {
   }
 };
 
-// Unified status updater: /admin/campaign/:status/:id
+
 exports.updateCharityStatus = async (req, res) => {
   try {
     const { id, status } = req.params;
@@ -90,12 +84,7 @@ exports.updateCharityStatus = async (req, res) => {
     charity.status = status;
     await charity.save();
 
-    // Optional email notification
-    // await sendMail({
-    //   to: campaign.user.email,
-    //   subject: `Your campaign was ${status}`,
-    //   text: `Hi ${campaign.user.name},\n\nYour campaign "${campaign.title}" has been ${status}.\n\nThanks,\nCharity Team`,
-    // });
+    
 
     res.json({ message: `Charity ${status}` });
   } catch (err) {

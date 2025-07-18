@@ -12,7 +12,7 @@ const streamToBuffer = (stream) =>
 const generateReceiptPdf = async (donation, user) => {
   const doc = new PDFDocument();
 
-  // Compose the PDF content
+  
   doc.fontSize(20).text('Donation Receipt', { align: 'center' });
   doc.moveDown();
 

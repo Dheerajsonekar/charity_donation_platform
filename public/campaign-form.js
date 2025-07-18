@@ -78,7 +78,7 @@ function loadDraft() {
 async function showBeneficiaryFields() {
   const type = document.getElementById("beneficiaryType").value;
   const fieldsDiv = document.getElementById("beneficiaryFields");
-  fieldsDiv.innerHTML = ""; // clear previous fields
+  fieldsDiv.innerHTML = "";
 
   if (type === "individual") {
     fieldsDiv.innerHTML = `
@@ -93,7 +93,7 @@ async function showBeneficiaryFields() {
       <input type="tel" id="beneficiaryPhone" name="beneficiaryPhone" placeholder="Beneficiary Phone Number" required />
     `;
   } else if (type === "ngo") {
-     fieldsDiv.innerHTML = `
+    fieldsDiv.innerHTML = `
       <label for="ngoName">Select Approved NGO:</label>
       <select id="ngoName" name="ngoName" required>
         <option value="">Loading NGOs...</option>
@@ -101,60 +101,84 @@ async function showBeneficiaryFields() {
       <input type="text" id="ngoState" name="ngoState" placeholder="State" required />
       <input type="text" id="ngoCity" name="ngoCity" placeholder="City" required />
     `;
-  }
-
-  try {
-    const response = await axios.get("/api/approved-ngos", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    const ngoSelect = document.getElementById("ngoName");
-    ngoSelect.innerHTML = '<option value="">Select an approved NGO</option>';
-    console.log(response.data);
-    response.data.approvedNgos.forEach((ngo) => {
-      const option = document.createElement("option");
-      option.value = ngo.name;
-      option.textContent = ngo.name;
-      ngoSelect.appendChild(option);
-    });
-  } catch (error) {
-    console.error("Failed to load NGOs:", error);
-    const ngoSelect = document.getElementById("ngoName");
-    ngoSelect.innerHTML = '<option value="">Failed to load NGOs</option>';
-  }
-}
-
-// Final submission
-document
-  .getElementById("campaignForm")
-  .addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!validateStep(currentStep)) return;
-
-    const form = document.getElementById("campaignForm");
-    const formData = new FormData(form);
 
     try {
-      const response = await axios.post("/api/start/campaigns", formData, {
+      const response = await axios.get(`${window.APP_CONFIG.API_BASE_URL}/api/approved-ngos`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      alert("Campaign submitted successfully!");
+      const ngoSelect = document.getElementById("ngoName");
+      ngoSelect.innerHTML = '<option value="">Select an approved NGO</option>';
+      
+      if (response.data.approvedNgos && response.data.approvedNgos.length > 0) {
+        response.data.approvedNgos.forEach((ngo) => {
+          const option = document.createElement("option");
+          option.value = ngo.name;
+          option.textContent = ngo.name;
+          ngoSelect.appendChild(option);
+        });
+      } else {
+        ngoSelect.innerHTML = '<option value="">No approved NGOs available</option>';
+      }
+    } catch (error) {
+      console.error("Failed to load NGOs:", error);
+      const ngoSelect = document.getElementById("ngoName");
+      ngoSelect.innerHTML = '<option value="">Failed to load NGOs</option>';
+    }
+  }
+}
+
+
+document.getElementById("campaignForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!validateStep(currentStep)) return;
+
+  const form = document.getElementById("campaignForm");
+  const formData = new FormData(form);
+
+  // Show loading state
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Submitting...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await axios.post(`${window.APP_CONFIG.API_BASE_URL}/api/start/campaigns`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        'Content-Type': 'multipart/form-data'
+      },
+    });
+
+    if (response.data.success) {
+      alert("Campaign submitted successfully! It will be reviewed within 24-48 hours. You'll receive an email confirmation shortly.");
       localStorage.removeItem("campaignDraft");
       form.reset();
       currentStep = 0;
       showStep(currentStep);
-    } catch (error) {
-      console.error("Submission failed:", error);
-      alert("Failed to submit campaign. Please try again.");
+      
+      // Redirect to campaigns page
+      setTimeout(() => {
+        window.location.href = '/my-campaign.html';
+      }, 1500);
+    } else {
+      throw new Error(response.data.message || 'Submission failed');
     }
-  });
+    
+  } catch (error) {
+    console.error("Submission failed:", error);
+    const errorMessage = error.response?.data?.message || "Failed to submit campaign. Please try again.";
+    alert(errorMessage);
+  } finally {
+    // Reset button state
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+});
 
-// Load draft on DOM ready
+
 window.addEventListener("DOMContentLoaded", () => {
   showStep(currentStep);
   loadDraft();

@@ -218,7 +218,7 @@ async function deleteUser(userId) {
 
 
 
-// Initial load
+
 fetchCampaigns(currentStatus);
 
 fetchCharities(currentStatus);

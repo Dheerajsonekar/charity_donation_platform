@@ -27,7 +27,7 @@ const User = db.define('user', {
      isActive: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: true   // ✅ default active
+        defaultValue: true  
     }
     
 })

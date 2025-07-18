@@ -48,7 +48,7 @@ async function showDetails(campaignId) {
     const paymentHistoryDiv = document.getElementById("paymentHistory");
     const impactReportDiv = document.getElementById("impactReport");
 
-    // Populate payment history
+   
     paymentHistoryDiv.innerHTML = "<h4>Payment History</h4>";
     if (payments.length === 0) {
       paymentHistoryDiv.innerHTML += "<p>No payments yet.</p>";
@@ -61,12 +61,12 @@ async function showDetails(campaignId) {
         let reportSection = "";
 
         if (payment.impactReportUrl) {
-          // If impact report already exists
+          
           reportSection = `
       <p><strong>Impact Report:</strong> <a href="${payment.impactReportUrl}" target="_blank">View PDF</a></p>
     `;
         } else {
-          // If no impact report yet
+          
           reportSection = `
       <form class="impactReportForm" data-campaign-id="${campaignId}" data-payment-id="${payment.id}">
         <input type="file" name="impactReportPdf" accept="application/pdf" required />
@@ -108,7 +108,7 @@ async function showDetails(campaignId) {
             }
           );
           alert("Impact report submitted!");
-          // Optionally reload details
+          
           await showDetails(campaignId);
         } catch (error) {
           console.error("Error submitting impact report:", error);

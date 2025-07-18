@@ -11,7 +11,7 @@
     <div class="progress-bar" id="progressBar"></div>
 
     <form id="campaignForm" enctype="multipart/form-data" method="POST" action="/start/campaigns">
-      <!-- Step 1: Campaigner Info -->
+     
       <div class="form-step active">
         <h2>Campaigner Info</h2>
         <input type="text" id="campaignerName" name="campaignerName" placeholder="Name" required />
@@ -20,7 +20,7 @@
         <button type="button" onclick="nextStep()">Next</button>
       </div>
 
-      <!-- Step 2: Beneficiary Info -->
+     
       <div class="form-step">
         <h2>Beneficiary Info</h2>
         <select id="beneficiaryType" name="beneficiaryType" required onchange="showBeneficiaryFields()">
@@ -34,7 +34,7 @@
         <button type="button" onclick="nextStep()">Next</button>
       </div>
 
-      <!-- Step 3: Product Details -->
+      
       <div class="form-step">
         <h2>campaign Details</h2>
         <input type="file" id="campaign-image" name="campaign-image" accept="image/*" required />
@@ -45,7 +45,7 @@
         <button type="button" onclick="nextStep()">Next</button>
       </div>
 
-      <!-- Step 4: Final Step -->
+      
       <div class="form-step">
         <h2>Review & Submit</h2>
         <p>All fields validated. Submit now or save as draft.</p>

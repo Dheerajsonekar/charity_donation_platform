@@ -1,4 +1,3 @@
-// controllers/paymentController.js
 const razorpay = require("../config/razorpay");
 const Campaign = require("../models/Campaign");
 const User = require("../models/User");
@@ -6,30 +5,60 @@ const Payment = require("../models/Payment");
 const crypto = require("crypto");
 
 const generateReceiptPdf = require("../utils/generateReceiptPdf");
-const{ sendEmail }= require("../utils/sendEmail");
+const { sendEmail, emailTemplates } = require("../utils/sendEmail");
 
 exports.createOrder = async (req, res) => {
   try {
     const { campaignId, amount } = req.body;
 
+    // Validate input
+    if (!campaignId || !amount) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Campaign ID and amount are required" 
+      });
+    }
+
+    if (amount < 1) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Amount must be at least ₹1" 
+      });
+    }
+
     const campaign = await Campaign.findByPk(campaignId);
     if (!campaign) {
-      return res.status(404).json({ error: "Campaign not found" });
+      return res.status(404).json({ 
+        success: false,
+        error: "Campaign not found" 
+      });
+    }
+
+    if (campaign.status !== 'approved') {
+      return res.status(400).json({ 
+        success: false,
+        error: "Campaign is not approved for donations" 
+      });
     }
 
     const options = {
-      amount: amount*100,
+      amount: Math.round(amount * 100), // Convert to paise
       currency: "INR",
-      receipt: `receipt_order_${Date.now()}`,
+      receipt: `receipt_${campaignId}_${Date.now()}`,
+      notes: {
+        campaignId: campaignId,
+        userId: req.user.userId
+      }
     };
 
     const order = await razorpay.orders.create(options);
-
     const user = await User.findByPk(req.user.userId);
 
     res.json({
+      success: true,
       id: order.id,
       amount: order.amount,
+      currency: order.currency,
       user: {
         name: user.name,
         email: user.email,
@@ -38,16 +67,27 @@ exports.createOrder = async (req, res) => {
     });
   } catch (err) {
     console.error("Create order error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      error: "Internal server error" 
+    });
   }
 };
 
 exports.verifyPayment = async (req, res) => {
   try {
     const { paymentResponse, campaignId, amount } = req.body;
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      paymentResponse;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = paymentResponse;
 
+    // Validate input
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid payment response" 
+      });
+    }
+
+    // Verify signature
     const body = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -55,96 +95,159 @@ exports.verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ error: "Invalid signature" });
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid payment signature" 
+      });
     }
 
     const campaign = await Campaign.findByPk(campaignId);
     if (!campaign) {
-      return res.status(404).json({ error: "Campaign not found" });
+      return res.status(404).json({ 
+        success: false,
+        error: "Campaign not found" 
+      });
     }
 
-    campaign.amountRaised =
-      Number(campaign.amountRaised || 0) + Number(amount) ;
+    // Update campaign amount
+    const donationAmount = Number(amount);
+    campaign.amountRaised = Number(campaign.amountRaised || 0) + donationAmount;
     await campaign.save();
 
+    // Create payment record
     const payment = await Payment.create({
       userId: req.user.userId,
       campaignId,
-      amount: Number(amount) ,
+      amount: donationAmount,
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
     });
 
+    // Send confirmation email
+    const user = await User.findByPk(req.user.userId);
+    const emailContent = emailTemplates.donationReceived(
+      user.name,
+      campaign.campaignTitle,
+      donationAmount,
+      razorpay_payment_id
+    );
+    
+    await sendEmail(user.email, 'Donation Confirmation - Thank You!', emailContent);
 
-    const html = `
-      <h3>Thank you for your donation!</h3>
-      <p>You donated ₹${amount} to <strong>${campaign.campaignTitle}</strong>.</p>
-      <p>Payment order id: ${razorpay_order_id}</p>
-      <p>Payment id: ${razorpay_payment_id}</p>
-      <p>Date: ${new Date(payment.createdAt).toLocaleString()}</p>
-    `;
-     const user = await User.findByPk(req.user.userId);
-     console.log("user.email", user.email);
-    await sendEmail(user.email, 'Donation Confirmation', html);
-
-    res.json({ success: true });
+    res.json({ 
+      success: true,
+      message: "Payment verified successfully",
+      payment: {
+        id: payment.id,
+        amount: payment.amount,
+        paymentId: razorpay_payment_id
+      }
+    });
   } catch (err) {
     console.error("Verify payment error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      error: "Internal server error" 
+    });
   }
 };
+
 exports.getPayments = async (req, res) => {
   try {
     const payments = await Payment.findAll({
       where: { userId: req.user.userId },
-      include: [{ model: Campaign, attributes: ["campaignTitle"] }],
-      attributes: ['id', 'userId', 'campaignId', 'amount', 'createdAt', 'receiptUrl', 'impactReportUrl'] // ✅ include this!
+      include: [{ 
+        model: Campaign, 
+        attributes: ["id", "campaignTitle"] 
+      }],
+      attributes: ['id', 'userId', 'campaignId', 'amount', 'createdAt', 'receiptUrl', 'impactReportUrl'],
+      order: [['createdAt', 'DESC']]
     });
 
-    res.status(200).json(payments);
+    res.status(200).json({
+      success: true,
+      payments: payments.map(payment => ({
+        id: payment.id,
+        campaignId: payment.campaignId,
+        amount: payment.amount,
+        createdAt: payment.createdAt,
+        receiptUrl: payment.receiptUrl,
+        impactReportUrl: payment.impactReportUrl,
+        Campaign: payment.Campaign
+      }))
+    });
   } catch (err) {
     console.error("Get payments error:", err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      error: "Internal server error" 
+    });
   }
 };
-
 
 exports.generateReceipt = async (req, res) => {
   try {
     const donationId = req.params.id;
-    const donation = await Payment.findByPk(donationId, {
+    const userId = req.user.userId;
+
+    const donation = await Payment.findOne({
+      where: { 
+        id: donationId,
+        userId: userId 
+      },
       include: [
-        { model: User },
-        { model: Campaign, attributes: ["campaignTitle"] },
+        { 
+          model: User,
+          attributes: ['id', 'name', 'email']
+        },
+        { 
+          model: Campaign, 
+          attributes: ["id", "campaignTitle"] 
+        },
       ],
     });
 
-    console.log("Donation:", donation);
-    if (!donation)
-      return res.status(404).json({ message: "Donation not found" });
+    if (!donation) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Donation not found or you don't have permission to view it" 
+      });
+    }
 
-    if (!donation.user) {
+    if (!donation.User) {
       return res.status(500).json({
-        message: "Donation User not found for this donation",
-        donation,
+        success: false,
+        message: "User information not found for this donation"
       });
     }
 
     // If receipt URL already exists, return it
-    if (donation.receiptUrl)
-      return res.json({ receiptUrl: donation.receiptUrl });
+    if (donation.receiptUrl) {
+      return res.json({ 
+        success: true,
+        receiptUrl: donation.receiptUrl 
+      });
+    }
 
-    const pdfUrl = await generateReceiptPdf(donation, donation.user);
+    // Generate new receipt
+    const pdfUrl = await generateReceiptPdf(donation, donation.User);
 
-    // Save receipt URL to DB
+    // Save receipt URL to database
     donation.receiptUrl = pdfUrl;
     await donation.save();
 
-    res.json({ receiptUrl: pdfUrl });
+    res.json({ 
+      success: true,
+      receiptUrl: pdfUrl,
+      message: "Receipt generated successfully"
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to generate receipt", error: error.message });
+    console.error("Generate receipt error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to generate receipt", 
+      error: process.env.NODE_ENV === 'development' ? error.message : null
+    });
   }
 };

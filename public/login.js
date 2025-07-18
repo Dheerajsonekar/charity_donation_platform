@@ -6,21 +6,17 @@ form.addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    if (!email || !password) {
-        alert('Please fill in all fields');
-        return;
-    }
+    const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : window.location.origin;
 
     try {
-        const response = await axios.post(`${window.APP_CONFIG.API_BASE_URL}/api/login`, {
+        const response = await axios.post(`${API_BASE_URL}/api/login`, {
             email, 
             password
         });
         
-        if (response.data.success) {
+        if (response.data.success !== false) {
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('username', response.data.name);
-            alert('Login successful!');
             window.location.href = './home.html';
         }
 

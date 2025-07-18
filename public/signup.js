@@ -10,25 +10,14 @@ signupForm.addEventListener('submit', async (e) => {
         password: document.getElementById('password').value
     };
 
-    // Basic validation
-    if (!user.name || !user.email || !user.phone || !user.password) {
-        alert('Please fill in all fields');
-        return;
-    }
-
-    if (user.password.length < 6) {
-        alert('Password must be at least 6 characters long');
-        return;
-    }
+    const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : window.location.origin;
 
     try {
-        const response = await axios.post(`${window.APP_CONFIG.API_BASE_URL}/api/register`, user);
+        const response = await axios.post(`${API_BASE_URL}/api/register`, user);
         
-        if (response.data.success) {
-            alert('Registration successful! Please login to continue.');
-            signupForm.reset();
-            window.location.href = './login.html';
-        }
+        alert('Registration successful! Please login to continue.');
+        signupForm.reset();
+        window.location.href = './login.html';
         
     } catch (err) {
         console.error('Registration error:', err);

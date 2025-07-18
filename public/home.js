@@ -7,17 +7,21 @@ const searchButton = document.getElementById("searchButton");
 const resetButton = document.getElementById("resetButton");
 const campaignList = document.getElementById("campaignList");
 
+// Use the API base URL from config
+const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : window.location.origin;
+
 // Authentication UI
 if (token) {
   loginBtn.style.display = "none";
   profileContainer.style.display = "block";
 
-  axios.get(`${API_BASE_URL}/api/user/profile`, {
+  axios
+    .get(`${API_BASE_URL}/api/user/profile`, {
       headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
       console.log("User profile data:", res.data);
-      if (res.data.user.avatar) {
+      if (res.data.user && res.data.user.avatar) {
         document.getElementById("profilePic").style.backgroundImage = `url(${res.data.user.avatar})`;
       }
     })
@@ -30,32 +34,41 @@ if (token) {
 }
 
 // Navigation handlers
-profileContainer.addEventListener("click", () => {
-  dropdownMenu.style.display =
-    dropdownMenu.style.display === "block" ? "none" : "block";
-});
+if (profileContainer) {
+  profileContainer.addEventListener("click", () => {
+    dropdownMenu.style.display =
+      dropdownMenu.style.display === "block" ? "none" : "block";
+  });
+}
 
-document.getElementById("logout").addEventListener("click", () => {
-  localStorage.clear();
-  window.location.href = "/login.html";
-});
+if (document.getElementById("logout")) {
+  document.getElementById("logout").addEventListener("click", () => {
+    localStorage.clear();
+    window.location.href = "/login.html";
+  });
+}
 
-loginBtn.addEventListener("click", () => {
-  window.location.href = "/login.html";
-});
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+    window.location.href = "/login.html";
+  });
+}
 
 // Mobile menu
 const hamburger = document.getElementById("hamburger");
 const navLinks = document.querySelector(".nav-links");
 const authsection = document.querySelector(".auth-section");
 
-hamburger.addEventListener("click", () => {
-  navLinks.classList.toggle("show");
-  authsection.classList.toggle("show");
-});
+if (hamburger) {
+  hamburger.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+    authsection.classList.toggle("show");
+  });
+}
 
 window.addEventListener("click", (e) => {
   if (
+    hamburger && navLinks && authsection &&
     !hamburger.contains(e.target) &&
     !navLinks.contains(e.target) &&
     !authsection.contains(e.target)
@@ -63,7 +76,7 @@ window.addEventListener("click", (e) => {
     navLinks.classList.remove("show");
     authsection.classList.remove("show");
   }
-  if (!profileContainer.contains(e.target)) {
+  if (profileContainer && dropdownMenu && !profileContainer.contains(e.target)) {
     dropdownMenu.style.display = "none";
   }
 });
@@ -71,27 +84,31 @@ window.addEventListener("click", (e) => {
 // Campaign functions
 async function fetchCampaigns(searchTerm = "") {
   try {
+    console.log('Fetching campaigns from:', `${API_BASE_URL}/api/campaigns`);
     const response = await axios.get(
       `${API_BASE_URL}/api/campaigns?search=${encodeURIComponent(searchTerm)}`
     );
     
-    if (response.data.success) {
-      displayCampaigns(response.data.campaigns);
+    if (response.data.success !== false) {
+      displayCampaigns(response.data.campaigns || []);
     } else {
       throw new Error(response.data.message || 'Failed to fetch campaigns');
     }
   } catch (error) {
     console.error("Error fetching campaigns:", error);
-    campaignList.innerHTML = '<p class="error">Error loading campaigns. Please try again later.</p>';
+    if (campaignList) {
+      campaignList.innerHTML = '<p class="error">Error loading campaigns. Please try again later.</p>';
+    }
   }
 }
 
 function displayCampaigns(campaigns) {
+  if (!campaignList) return;
+  
   campaignList.innerHTML = "";
 
-  if (campaigns.length === 0) {
-    campaignList.innerHTML =
-      '<p class="no-results">No campaigns found. Try a different search term.</p>';
+  if (!campaigns || campaigns.length === 0) {
+    campaignList.innerHTML = '<p class="no-results">No campaigns found. Try a different search term.</p>';
     return;
   }
 
@@ -107,26 +124,21 @@ function displayCampaigns(campaigns) {
     campaignDiv.innerHTML = `
       <img src="${
         campaign.campaignImageUrl || "/placeholder-image.jpg"
-      }" alt="${campaign.campaignTitle}" class="campaign-image">
-      <h3>${campaign.campaignTitle.substring(0, 40)}...</h3>
-      <p class="description">${campaign.campaignDescription.substring(
-        0,
-        50
-      )}...</p>
-      <p class="organizer">By: ${campaign.campaignerName}</p>
+      }" alt="${campaign.campaignTitle}" class="campaign-image" onerror="this.src='/placeholder-image.jpg'">
+      <h3>${campaign.campaignTitle.substring(0, 40)}${campaign.campaignTitle.length > 40 ? '...' : ''}</h3>
+      <p class="description">${campaign.campaignDescription.substring(0, 50)}...</p>
+      <p class="organizer">By: ${campaign.campaignerName || campaign.User?.name || 'Anonymous'}</p>
       
       <div class="progress-container">
         <div class="progress-bar" style="width: ${progressPercent}%"></div>
       </div>
       <div class="progress-text">
-        <span>Rs.${campaign.amountRaised || 0} raised</span>
-        <span>${progressPercent}% of Rs.${campaign.goalAmount}</span>
+        <span>₹${campaign.amountRaised || 0} raised</span>
+        <span>${progressPercent}% of ₹${campaign.goalAmount}</span>
       </div>
       
       <div class="campaign-buttons">
-        <button class="share-btn" onclick="shareCampaign('${campaign.id}', '${
-      campaign.campaignTitle
-    }')">
+        <button class="share-btn" onclick="shareCampaign('${campaign.id}', '${campaign.campaignTitle.replace(/'/g, "\\'")}')">
           <i class="icon">↗</i> Share
         </button>
         <button class="donate-btn" onclick="initiateDonation('${campaign.id}')">
@@ -140,20 +152,26 @@ function displayCampaigns(campaigns) {
 }
 
 // Search functionality
-searchButton.addEventListener("click", () => {
-  fetchCampaigns(searchInput.value);
-});
-
-searchInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
+if (searchButton) {
+  searchButton.addEventListener("click", () => {
     fetchCampaigns(searchInput.value);
-  }
-});
+  });
+}
 
-resetButton.addEventListener("click", () => {
-  searchInput.value = "";
-  fetchCampaigns();
-});
+if (searchInput) {
+  searchInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      fetchCampaigns(searchInput.value);
+    }
+  });
+}
+
+if (resetButton) {
+  resetButton.addEventListener("click", () => {
+    searchInput.value = "";
+    fetchCampaigns();
+  });
+}
 
 // Razorpay integration
 function initiateDonation(campaignId) {
@@ -176,7 +194,8 @@ function initiateDonation(campaignId) {
     btn.disabled = true;
   });
 
-  axios.post(`${API_BASE_URL}/api/payments/create-order`, {
+  axios
+    .post(`${API_BASE_URL}/api/payments/create-order`, {
       campaignId,
       amount: parseFloat(amount), 
     }, {
@@ -215,8 +234,12 @@ function initiateDonation(campaignId) {
         }
       };
 
-      const rzp = new Razorpay(options);
-      rzp.open();
+      if (typeof Razorpay !== 'undefined') {
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } else {
+        throw new Error('Razorpay not loaded');
+      }
     })
     .catch((error) => {
       console.error("Payment error:", error);
@@ -231,9 +254,9 @@ function initiateDonation(campaignId) {
     });
 }
 
-
 function verifyPayment(paymentResponse, campaignId, amount) {
-  axios.post(`${API_BASE_URL}/api/payments/verify`, {
+  axios
+    .post(`${API_BASE_URL}/api/payments/verify`, {
       paymentResponse,
       campaignId,
       amount,
@@ -262,7 +285,6 @@ function verifyPayment(paymentResponse, campaignId, amount) {
     });
 }
 
-
 // Share functionality
 function shareCampaign(campaignId, title) {
   if (navigator.share) {
@@ -282,7 +304,7 @@ function shareCampaign(campaignId, title) {
   }
 }
 
-
+// Initialize the page
 fetchCampaigns();
 
 // Load Razorpay script dynamically

@@ -3,9 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>home</title>
+  <title>DonateKart - Make a Difference</title>
   <link rel="stylesheet" href="./home.css">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="./config.js"></script>
 </head>
 
 <body>
@@ -19,14 +20,11 @@
     <div class="nav-links">
       <a href="/home.html">Explore Campaigns</a>
       <a href="/campaign-form.html">Start a Campaign</a>
-
-
     </div>
 
     <div class="auth-section">
       <!-- If user is logged in, show profile. Else, show Login button -->
       <div class="profile-container" id="profileContainer" style="display: none;">
-
         <div class="profile-pic" id="profilePic"></div>
         <div class="dropdown" id="dropdownMenu">
           <a href="/profile.html">👤 My Profile</a>
@@ -46,14 +44,12 @@
       <button id="searchButton">Search</button>
       <button id="resetButton">Reset</button>
     </div>
-
-
   </div>
 
   <div class="container">
     <h2>All Campaigns</h2>
     <div id="campaignList" class="card-grid">
-
+      <p>Loading campaigns...</p>
     </div>
   </div>
 
@@ -70,7 +66,6 @@
         <ul>
           <li><a href="/home.html">Explore Campaigns</a></li>
           <li><a href="/campaign-form.html">Start a Campaign</a></li>
-          
         </ul>
       </div>
 
@@ -80,17 +75,11 @@
         <p>Phone: +91 98765 43210</p>
         <p>Location: Mumbai, India</p>
       </div>
-
-
     </div>
     <div class="footer-bottom">
       © 2025 DonateKart. All rights reserved.
     </div>
   </footer>
-
-
-
-
 
   <script src="./home.js"></script>
 

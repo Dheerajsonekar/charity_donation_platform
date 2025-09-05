@@ -7,7 +7,7 @@ const token = localStorage.getItem("token");
       },
     });
 
-    const user = response.data;
+    const user = response.data.user;
     console.log(user);
     document.getElementById("name").textContent = user.name || "N/A";
     document.getElementById("email").textContent = user.email || "N/A";

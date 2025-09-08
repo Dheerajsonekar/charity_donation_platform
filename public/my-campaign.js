@@ -2,6 +2,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   await loadMyCampaigns();
 });
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 async function loadMyCampaigns() {
   try {
     const response = await axios.get("/api/my-campaigns", {

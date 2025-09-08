@@ -5,6 +5,8 @@ if (!token) {
   window.location.href = "/login.html";
 }
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 async function fetchDonations() {
   try {
     const res = await axios("/api/payments/user/donations", {

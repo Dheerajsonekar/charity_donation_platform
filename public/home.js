@@ -10,6 +10,8 @@ const campaignList = document.getElementById("campaignList");
 // Use the API base URL from config
 const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : window.location.origin;
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 // Authentication UI
 if (token) {
   loginBtn.style.display = "none";

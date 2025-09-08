@@ -8,6 +8,8 @@ document.getElementById("cancelAddCharityBtn").addEventListener("click", () => {
   document.getElementById("addCharityBtn").style.display = "block";
 });
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 const form = document.querySelector("form");
 
 form.addEventListener("submit", async (e) => {
@@ -39,7 +41,7 @@ form.addEventListener("submit", async (e) => {
 
 async function fetchCharities() {
   try {
-    const response = await axios.get(`${window.APP_CONFIG.API_BASE_URL}/api/getcharities`, {
+    const response = await axios.get(`/api/getcharities`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
@@ -78,3 +80,4 @@ async function fetchCharities() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchCharities();
 });
+

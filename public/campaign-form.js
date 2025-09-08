@@ -2,6 +2,8 @@ let currentStep = 0;
 const steps = document.querySelectorAll(".form-step");
 const progressBar = document.getElementById("progressBar");
 
+console.log("url",window.APP_CONFIG);
+
 function showStep(index) {
   steps.forEach((step, i) => {
     step.classList.toggle("active", i === index);
@@ -145,7 +147,7 @@ document.getElementById("campaignForm").addEventListener("submit", async (e) => 
   submitBtn.disabled = true;
 
   try {
-    const response = await axios.post(`${window.APP_CONFIG.API_BASE_URL}/api/start/campaigns`, formData, {
+    const response = await axios.post(`/api/start/campaigns`, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
         'Content-Type': 'multipart/form-data'

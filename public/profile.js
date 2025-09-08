@@ -23,6 +23,8 @@ const token = localStorage.getItem("token");
   }
 })();
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 document.getElementById("editBtn").addEventListener("click", () => {
   document.getElementById("editForm").style.display = "block";
   document.getElementById('editBtn').style.display = 'none';

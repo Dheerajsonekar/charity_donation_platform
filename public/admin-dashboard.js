@@ -12,6 +12,9 @@ const tabs = document.querySelectorAll(".tab");
 const campaignContainer = document.getElementById("campaignContainer");
 const charityContainer = document.getElementById("charityContainer");
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
+
 let currentStatus = "pending";
 
 tabs.forEach((tab) => {

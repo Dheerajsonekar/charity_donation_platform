@@ -1,5 +1,7 @@
 const signupForm = document.getElementById('registerForm');
 
+console.log('🚀 API Base URL set to:', window.APP_CONFIG.API_BASE_URL);
+
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     

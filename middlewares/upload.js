@@ -25,13 +25,13 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   limits: { 
-    fileSize: 5 * 1024 * 1024, // 5MB for free tier
+    fileSize: 5 * 1024 * 1024,
     files: 1
   },
   fileFilter,
 });
 
-// Upload image to Cloudinary (optimized for free tier)
+// Upload image to Cloudinary 
 const uploadToS3 = async (file) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -83,7 +83,7 @@ const uploadPdfToS3 = async (pdfBuffer, filename) => {
   });
 };
 
-// Legacy support - keeping your existing function names
+
 const uploadToCloudinary = uploadToS3;
 
 module.exports = { 

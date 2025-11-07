@@ -23,7 +23,7 @@ async function generateEmbedding(text) {
     );
     return res.data.data[0].embedding;
   } catch (err) {
-    console.error("❌ Embedding generation failed:", err.message);
+    console.error(" Embedding generation failed:", err.message);
     return [];
   }
 }
@@ -46,9 +46,9 @@ const generateAllEmbeddings = async (req, res) => {
       ]);
     }
 
-    res.json({ success: true, message: "✅ All embeddings generated successfully" });
+    res.json({ success: true, message: " All embeddings generated successfully" });
   } catch (err) {
-    console.error("⚠️ Embedding generation error:", err.message);
+    console.error(" Embedding generation error:", err.message);
     res.status(500).json({ success: false, error: "Failed to generate embeddings" });
   }
 };

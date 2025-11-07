@@ -16,6 +16,7 @@ const adminAuthRoutes = require('./routes/adminAuthRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const charityRoutes = require('./routes/charityRoutes');
 const paymentsRoutes = require("./routes/paymentRoutes");
+// const aiRoutes = require("./routes/aiRoutes");
 
 // CORS configuration for free deployment
 const corsOptions = {
@@ -74,6 +75,7 @@ app.use('/api', userRoutes);
 app.use('/api', campaignRoutes);
 app.use('/api', charityRoutes);
 app.use("/api/payments", paymentsRoutes);
+// app.use("/api/ai", aiRoutes);
 
 // Model Associations
 User.hasMany(Campaign, { foreignKey: 'userId', onDelete: 'CASCADE' });

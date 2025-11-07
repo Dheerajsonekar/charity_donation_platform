@@ -70,7 +70,11 @@ const Campaign = sequelize.define("Campaign", {
   status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected'),
     defaultValue: 'pending'
-  }
+  },
+  // embedding: {
+  //   type: DataTypes.JSON,
+  //   allowNull: true,
+  // },
 });
 
 module.exports = Campaign;
